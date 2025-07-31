@@ -132,3 +132,82 @@ graph TD
     F --> A
 ```
 ![画面構成](./画面構成.png)
+
+# Step 2. ER図 / GORMモデル
+
+## 📄 users（ユーザー情報）
+
+| Column         | Type         | Description                        |
+|----------------|--------------|------------------------------------|
+| id             | SERIAL PK    | ユーザーID                         |
+| username       | TEXT UNIQUE  | 表示名・サブドメイン用            |
+| email          | TEXT UNIQUE  | メールアドレス（認証用）          |
+| password_hash  | TEXT         | パスワードのハッシュ               |
+| created_at     | TIMESTAMP    | 登録日時                           |
+
+---
+
+## 📄 challenges（問題情報）
+
+| Column         | Type         | Description                        |
+|----------------|--------------|------------------------------------|
+| id             | SERIAL PK    | 問題ID                             |
+| user_id        | INTEGER FK   | 作成者ユーザー                     |
+| title          | TEXT         | 問題名（例：fuga）                |
+| description    | TEXT         | 問題文（Markdown等）              |
+| category_id    | INTEGER FK   | カテゴリ（pwn/web/revなど）       |
+| flag           | TEXT         | フラグ（ハッシュ or プレーン）    |
+| is_public      | BOOLEAN      | 公開フラグ（trueで他ユーザー表示）|
+| score          | INTEGER      | 初期スコア                         |
+| created_at     | TIMESTAMP    | 作成日                             |
+
+---
+
+## 📄 challenge_categories（問題カテゴリ）
+
+| Column         | Type         | Description                        |
+|----------------|--------------|------------------------------------|
+| id             | SERIAL PK    | カテゴリID                         |
+| name           | TEXT         | pwn, web, miscなど                 |
+
+---
+
+## 📄 challenge_files（添付ファイル情報）
+
+| Column         | Type         | Description                        |
+|----------------|--------------|------------------------------------|
+| id             | SERIAL PK    | ファイルID                         |
+| challenge_id   | INTEGER FK   | 対応する問題ID                     |
+| filename       | TEXT         | 元のファイル名                     |
+| filepath       | TEXT         | サーバー内保存パス                 |
+| mimetype       | TEXT         | application/zip のみ対応           |
+| size           | INTEGER      | サイズ（バイト）                  |
+| uploaded_at    | TIMESTAMP    | アップロード日時                   |
+
+---
+
+## 📄 docker_challenges（Docker管理が必要な問題）
+
+| Column         | Type         | Description                        |
+|----------------|--------------|------------------------------------|
+| id             | SERIAL PK    | Docker情報ID                       |
+| challenge_id   | INTEGER FK   | 対応する challenge                 |
+| image_tag      | TEXT         | 例：ctflab/bob-hoge:latest         |
+| exposed_port   | INTEGER      | 起動時に公開するポート            |
+| entrypoint     | TEXT         | 実行エントリポイント               |
+| created_at     | TIMESTAMP    | 作成日時                           |
+
+---
+
+## 📄 submissions（ユーザーの提出履歴）
+
+| Column         | Type         | Description                        |
+|----------------|--------------|------------------------------------|
+| id             | SERIAL PK    | 提出ID                             |
+| user_id        | INTEGER FK   | 提出者ユーザーID                   |
+| challenge_id   | INTEGER FK   | 対象の challenge                   |
+| submitted_at   | TIMESTAMP    | 提出日時                           |
+| flag           | TEXT         | 提出された flag                    |
+| is_correct     | BOOLEAN      | 正解かどうか                       |
+
+![ER図](./DB_ER図.png)
