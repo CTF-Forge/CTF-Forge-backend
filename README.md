@@ -23,46 +23,37 @@ webとdesktopで公開する。
 
 ディレクトリ構成
 ```text
-ctflab/
-├── cmd/
-│   ├── web/                  # Webサーバ用エントリポイント (Gin)
-│   │   └── main.go
-│   └── desktop/              # Wailsアプリ用エントリポイント
-│       └── main.go
-├── internal/
-│   ├── config/               # 設定読み込み（.env, yaml 等）
-│   │   └── config.go
-│   ├── domain/               # ドメインモデル (構造体・インターフェース)
-│   │   ├── user.go
-│   │   └── challenge.go
-│   ├── repository/           # DB操作の実装 (GORM)
-│   │   ├── user_repo.go
-│   │   └── challenge_repo.go
-│   ├── service/              # ビジネスロジック
-│   │   ├── auth_service.go
-│   │   └── challenge_service.go
-│   ├── handler/              # Web/デスクトップ共通ハンドラ
-│   │   ├── user_handler.go
-│   │   └── challenge_handler.go
-│   ├── transport/
-│   │   ├── http/             # Ginのルーターとミドルウェア
-│   │   │   ├── router.go
-│   │   │   ├── middleware.go
-│   │   │   └── subdomain.go
-│   │   └── desktop/          # Wailsのバインディング
-│   │       └── bindings.go
-├── frontend/                 # SvelteKit（Web/デスクトップ共通UI）
-│   ├── src/
-│   └── vite.config.ts
-├── migrations/               # DBマイグレーションSQL
-├── scripts/                  # 初期化・CI/CD用スクリプト
-│   └── init_db.sh
-├── test/                     # 統合・ユニットテスト
-│   └── challenge_test.go
-├── docs/                     # API仕様書、設計資料など
-│   └── openapi.yaml
+.
+├── cmd
+│   └── server
+│       └── main.go         # エントリポイント
+├── config
+│   └── config.go           # 設定（環境変数・DB接続など）
+├── internal
+│   ├── models
+│   │   └── user.go         # ドメインモデル（User等）
+│   ├── repository
+│   │   └── user_repo.go    # 永続化層（DB）
+│   ├── service
+│   │   ├── auth_service.go # ローカル認証
+│   │   └── oauth_service.go# OAuth認証（gothを使う）
+│   ├── handler
+│   │   ├── auth_handler.go # /auth/login, register
+│   │   └── oauth_handler.go# /auth/github, /auth/google
+│   └── router
+│       └── router.go       # Ginルーター定義
+├── pkg
+│   └── token
+│       └── jwt.go          # JWT関連ユーティリティ
+├── oauth
+│   └── init.go             # goth.UseProviders など初期化
+├── docs
+│   └── swagger...          # Swag用ドキュメント
+├── frontend
 ├── go.mod
-└── README.md
+├── go.sum
+├── main.go                 # redirect to cmd/server/main.go
+└── migrations              # DBマイグレーション
 ```
 
 開発順番

@@ -122,5 +122,4 @@ coverage/
 *.lcov
 *.coverage
 
-# swag docs
-/docs
+memo
