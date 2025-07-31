@@ -98,3 +98,37 @@ Step 6. Wails統合
     - サンドボックス環境の自動デプロイ(例: `problem.user.ctflab.dev`)
     - 問題ごとに独立したDocker環境を立てる
     - 運用負荷を減らす問題クリーンアップ(いい定時間後自動停止)
+
+## 画面構成(MVP)
+
+```
+[ホーム] (/)
+ ├─▶ [ログイン] (/login)
+ ├─▶ [問題一覧] (/challenges)
+ │     └─▶ [問題詳細] (/challenges/:id)
+ │           └─▶ [Flag提出結果モーダル]
+ ├─▶ [問題作成] (/challenges/new)  ←ログインユーザーのみ
+ ├─▶ [マイページ] (/me)
+ │     ├─▶ [自分の問題一覧] (/me/challenges)
+ │     ├─▶ [解答履歴] (/me/submissions)
+ └─▶ [ログアウト]
+```
+
+```mermaid
+graph TD
+    A[ホーム /] --> B[ログイン /login]
+    A --> C[問題一覧 /challenges]
+    C --> C1[問題詳細 /challenges/:id]
+    C1 --> C2[Flag提出結果モーダル]
+
+    A --> D[マイページ /me]
+    D --> D1[自分の問題一覧 /me/challenges]
+    D --> D2[提出履歴 /me/submissions]
+
+    A --> E[問題作成 /challenges/new]
+    A --> F[ログアウト]
+
+    B --> A
+    F --> A
+```
+![画面構成](./画面構成.png)
