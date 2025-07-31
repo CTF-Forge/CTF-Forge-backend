@@ -121,3 +121,6 @@ docker-compose.override.yml
 coverage/
 *.lcov
 *.coverage
+
+# swag docs
+/docs
