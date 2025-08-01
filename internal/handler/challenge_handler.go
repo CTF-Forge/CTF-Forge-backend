@@ -4,21 +4,12 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/Saku0512/CTFLab/ctflab/internal/handler/dtos"
 	"github.com/Saku0512/CTFLab/ctflab/internal/models"
 	"github.com/Saku0512/CTFLab/ctflab/internal/service"
 	"github.com/Saku0512/CTFLab/ctflab/pkg/token"
 	"github.com/gin-gonic/gin"
 )
-
-// CreateChallengeRequestは問題作成APIのリクエストボディを定義します。
-// データベースモデルと分離することで、柔軟に対応できます。
-type CreateChallengeRequest struct {
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description"`
-	Category    string `json:"category"` // カテゴリー名を文字列として受け取ります
-	Score       int    `json:"score" binding:"required"`
-	Flag        string `json:"flag" binding:"required"`
-}
 
 type ChallengeHandler struct {
 	service service.ChallengeService
@@ -28,9 +19,20 @@ func NewChallengeHandler(service service.ChallengeService) *ChallengeHandler {
 	return &ChallengeHandler{service: service}
 }
 
-// CreateChallengeは、認証されたユーザーが新しい問題を作成するためのハンドラです。
+// @Summary 新しい問題を作成
+// @Description 認証されたユーザーが新しい問題を作成します
+// @Tags challenges
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param challenge body dtos.CreateChallengeRequest true "問題作成情報"
+// @Success 201 {object} dtos.ChallengeCreateResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/challenges [post]
 func (h *ChallengeHandler) CreateChallenge(c *gin.Context) {
-	var req CreateChallengeRequest
+	var req dtos.CreateChallengeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
 		return
