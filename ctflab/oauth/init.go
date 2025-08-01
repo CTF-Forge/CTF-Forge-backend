@@ -1,16 +1,17 @@
 package oauth
 
 import (
-	"os"
-
+	"github.com/Saku0512/CTFLab/ctflab/config"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
 )
 
 func Init() {
+	config.InitDB()
+
 	goth.UseProviders(
-		github.New(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"), "http://localhost:8080/auth/github/callback"),
-		google.New(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"), "http://localhost:8080/auth/google/callback"),
+		github.New(config.GetGitHubAuthKey(), config.GetGitHubAuthSecret(), config.GetGitHubCallbackURL()),
+		google.New(config.GetGoogleAuthKey(), config.GetGoogleAuthSecret(), config.GetGoogleCallbackURL()),
 	)
 }

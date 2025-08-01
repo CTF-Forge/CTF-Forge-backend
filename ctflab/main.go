@@ -15,6 +15,7 @@ func main() {
 
 	err := db.AutoMigrate(
 		&models.User{},
+		&models.OAuthAccount{}, // OAuthアカウントテーブルを追加
 		&models.ChallengeCategory{},
 		&models.Challenge{},
 		&models.ChallengeFile{},

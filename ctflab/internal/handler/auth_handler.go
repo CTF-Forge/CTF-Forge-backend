@@ -36,6 +36,10 @@ type LoginRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
+}
+
 // Register godoc
 // @Summary      ユーザー登録
 // @Description  新規ユーザーを登録します
@@ -46,7 +50,7 @@ type LoginRequest struct {
 // @Success      201   {object}  models.User
 // @Failure      400   {object}  ErrorResponse
 // @Failure      500   {object}  ErrorResponse
-// @Router       /api/v1/auth/register [post]
+// @Router       /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -90,7 +94,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 // @Success      200   {object}  TokenResponse
 // @Failure      400   {object}  ErrorResponse
 // @Failure      401   {object}  ErrorResponse
-// @Router       /api/v1/auth/login [post]
+// @Router       /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -103,14 +107,66 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.Login(context.Background(), req.Email, req.Password)
+	tokenPair, err := h.authService.Login(context.Background(), req.Email, req.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "login successful",
-		"token":   token,
+		"message":       "login successful",
+		"access_token":  tokenPair.AccessToken,
+		"refresh_token": tokenPair.RefreshToken,
+		"expires_in":    tokenPair.ExpiresIn,
 	})
+}
+
+// RefreshToken godoc
+// @Summary      トークン更新
+// @Description  リフレッシュトークンを使用して新しいアクセストークンを取得
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body  RefreshTokenRequest  true  "リフレッシュトークン"
+// @Success      200   {object}  TokenResponse
+// @Failure      400   {object}  ErrorResponse
+// @Failure      401   {object}  ErrorResponse
+// @Router       /auth/refresh [post]
+func (h *AuthHandler) RefreshToken(c *gin.Context) {
+	var req RefreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	if err := h.validate.Struct(req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	tokenPair, err := h.authService.RefreshToken(req.RefreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid refresh token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token":  tokenPair.AccessToken,
+		"refresh_token": tokenPair.RefreshToken,
+		"expires_in":    tokenPair.ExpiresIn,
+	})
+}
+
+// Logout godoc
+// @Summary      ログアウト
+// @Description  ユーザーログアウト
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Success      200   {object}  MessageResponse
+// @Router       /auth/logout [post]
+func (h *AuthHandler) Logout(c *gin.Context) {
+	// クライアント側でトークンを削除することを前提とする
+	// 必要に応じてブラックリストにトークンを追加する処理を追加可能
+	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
 }

@@ -1,38 +1,102 @@
 package router
 
 import (
-	"time"
-
 	"github.com/Saku0512/CTFLab/ctflab/config"
 	"github.com/Saku0512/CTFLab/ctflab/internal/handler"
 	"github.com/Saku0512/CTFLab/ctflab/internal/repository"
 	"github.com/Saku0512/CTFLab/ctflab/internal/service"
+	"github.com/Saku0512/CTFLab/ctflab/pkg/token"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
+	"github.com/markbates/goth/gothic"
 	"gorm.io/gorm"
 )
 
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
+	// セッションストア
+	gothic.Store = sessions.NewCookieStore([]byte(config.GetSessionSecret()))
+
+	// リポジトリの初期化
 	userRepo := repository.NewUserRepository(db)
-	config.LoadEnv()
-	authService := service.NewAuthService(userRepo, []byte(config.GetJWTSecret()), config.GetJWTIssuer(), time.Hour*config.GetJWTExpireDuration())
+	oauthRepo := repository.NewOAuthAccountRepository(db)
+
+	// JWTマネージャーの初期化
+	jwtManager := token.NewJWTManager(
+		config.GetJWTAccessSecret(),
+		config.GetJWTRefreshSecret(),
+		config.GetJWTIssuer(),
+		config.GetJWTAccessExpireDuration(),
+		config.GetJWTRefreshExpireDuration(),
+	)
+
+	// サービスの初期化
+	authService := service.NewAuthService(userRepo, jwtManager)
+	oauthService := service.NewOAuthService(oauthRepo, userRepo, jwtManager)
+
+	// ハンドラーの初期化
 	authHandler := handler.NewAuthHandler(authService)
+	oauthHandler := handler.NewOAuthHandler(oauthService, jwtManager)
 
 	// 認証APIグループ
-	authGroup := r.Group("/api/v1/auth")
+	authGroup := r.Group("/auth")
 	{
+		// Email認証
 		authGroup.POST("/register", authHandler.Register)
 		authGroup.POST("/login", authHandler.Login)
+		authGroup.POST("/refresh", authHandler.RefreshToken)
+		authGroup.POST("/logout", authHandler.Logout)
 
-		// OAuth系のルートもここに
-		// authGroup.GET("/github", handler.GithubAuthHandler)
-		// authGroup.GET("/github/callback", handler.GithubCallbackHandler)
-		// authGroup.GET("/google", handler.GoogleAuthHandler)
-		// authGroup.GET("/google/callback", handler.GoogleCallbackHandler)
+		// OAuth認証
+		authGroup.GET("/:provider", oauthHandler.BeginAuthHandler)
+		authGroup.GET("/:provider/callback", oauthHandler.CallbackAuthHandler)
+		authGroup.POST("/oauth/refresh", oauthHandler.RefreshTokenHandler)
+		authGroup.POST("/oauth/logout", oauthHandler.LogoutHandler)
 	}
 
-	// ここに他のAPIグループを追加
+	// 保護されたAPIグループ（認証が必要）
+	protectedGroup := r.Group("/api")
+	protectedGroup.Use(token.AuthMiddleware(jwtManager))
+	{
+		// ユーザー関連
+		protectedGroup.GET("/me", func(c *gin.Context) {
+			userID, _ := token.GetUserID(c)
+			username, _ := token.GetUsername(c)
+			c.JSON(200, gin.H{
+				"user_id":  userID,
+				"username": username,
+			})
+		})
+
+		// ここに他の保護されたエンドポイントを追加
+		// 例: 問題作成、提出履歴など
+	}
+
+	// 公開APIグループ（認証オプショナル）
+	publicGroup := r.Group("/api/public")
+	publicGroup.Use(token.OptionalAuthMiddleware(jwtManager))
+	{
+		// 問題一覧など、認証されていないユーザーもアクセス可能なエンドポイント
+		publicGroup.GET("/challenges", func(c *gin.Context) {
+			// 認証されている場合はユーザー情報を含める
+			if userID, exists := token.GetUserID(c); exists {
+				c.JSON(200, gin.H{
+					"message": "public challenges",
+					"user_id": userID,
+				})
+			} else {
+				c.JSON(200, gin.H{
+					"message": "public challenges",
+				})
+			}
+		})
+	}
+
+	// ヘルスチェック
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
 
 	return r
 }
