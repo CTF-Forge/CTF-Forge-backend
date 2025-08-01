@@ -12,6 +12,34 @@ import (
 	"github.com/Saku0512/CTFLab/ctflab/internal/service"
 )
 
+// Swag用のレスポンス型定義
+type ErrorResponse struct {
+	Error string `json:"error" example:"error message"`
+}
+
+type MessageResponse struct {
+	Message string `json:"message" example:"success message"`
+}
+
+type TokenResponse struct {
+	Message      string `json:"message" example:"login successful"`
+	AccessToken  string `json:"access_token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
+	RefreshToken string `json:"refresh_token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
+	ExpiresIn    int64  `json:"expires_in" example:"3600"`
+}
+
+type OAuthResponse struct {
+	Message      string `json:"message" example:"oauth authentication successful"`
+	AccessToken  string `json:"access_token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
+	RefreshToken string `json:"refresh_token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
+	ExpiresIn    int64  `json:"expires_in" example:"3600"`
+	User         struct {
+		Username string `json:"username" example:"testuser"`
+		Email    string `json:"email" example:"test@example.com"`
+		Provider string `json:"provider" example:"github"`
+	} `json:"user"`
+}
+
 type AuthHandler struct {
 	authService *service.AuthService
 	validate    *validator.Validate
@@ -26,18 +54,18 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 
 // リクエスト構造体
 type RegisterRequest struct {
-	Username string `json:"username" validate:"required,min=3,max=20"`
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=8"`
+	Username string `json:"username" validate:"required,min=3,max=20" example:"testuser"`
+	Email    string `json:"email" validate:"required,email" example:"test@example.com"`
+	Password string `json:"password" validate:"required,min=8" example:"password123"`
 }
 
 type LoginRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Email    string `json:"email" validate:"required,email" example:"test@example.com"`
+	Password string `json:"password" validate:"required" example:"password123"`
 }
 
 type RefreshTokenRequest struct {
-	RefreshToken string `json:"refresh_token" validate:"required"`
+	RefreshToken string `json:"refresh_token" validate:"required" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
 }
 
 // Register godoc
@@ -47,7 +75,7 @@ type RefreshTokenRequest struct {
 // @Accept       json
 // @Produce      json
 // @Param        body  body  RegisterRequest  true  "登録情報"
-// @Success      201   {object}  models.User
+// @Success      201   {object}  MessageResponse
 // @Failure      400   {object}  ErrorResponse
 // @Failure      500   {object}  ErrorResponse
 // @Router       /auth/register [post]
@@ -86,7 +114,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 // Login godoc
 // @Summary      ユーザーログイン
-// @Description  メールとパスワードでログイン
+// @Description  メールとパスワードでログインします
 // @Tags         auth
 // @Accept       json
 // @Produce      json
@@ -123,7 +151,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 // RefreshToken godoc
 // @Summary      トークン更新
-// @Description  リフレッシュトークンを使用して新しいアクセストークンを取得
+// @Description  リフレッシュトークンを使用して新しいアクセストークンを取得します
 // @Tags         auth
 // @Accept       json
 // @Produce      json
@@ -159,7 +187,7 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 
 // Logout godoc
 // @Summary      ログアウト
-// @Description  ユーザーログアウト
+// @Description  ユーザーログアウトします
 // @Tags         auth
 // @Accept       json
 // @Produce      json

@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	"github.com/markbates/goth/gothic"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
 )
 
@@ -38,6 +40,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	// ハンドラーの初期化
 	authHandler := handler.NewAuthHandler(authService)
 	oauthHandler := handler.NewOAuthHandler(oauthService, jwtManager)
+
+	// Swagger UI
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 認証APIグループ
 	authGroup := r.Group("/auth")

@@ -24,8 +24,16 @@ func NewOAuthHandler(oauthService *service.OAuthService, jwtManager *token.JWTMa
 	}
 }
 
-// BeginAuthHandler OAuth認証を開始
-// GET /auth/{provider}
+// BeginAuthHandler godoc
+// @Summary      OAuth認証開始
+// @Description  指定したプロバイダーでOAuth認証を開始します
+// @Tags         oauth
+// @Produce      json
+// @Param        provider  path  string  true  "プロバイダー名"  Enums(github, google)
+// @Success      307       {string}  string  "リダイレクト"
+// @Failure      400       {object}  ErrorResponse
+// @Failure      500       {object}  ErrorResponse
+// @Router       /auth/{provider} [get]
 func (h *OAuthHandler) BeginAuthHandler(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -49,8 +57,17 @@ func (h *OAuthHandler) BeginAuthHandler(c *gin.Context) {
 	gothic.BeginAuthHandler(c.Writer, c.Request)
 }
 
-// CallbackAuthHandler OAuth認証コールバックを処理
-// GET /auth/{provider}/callback
+// CallbackAuthHandler godoc
+// @Summary      OAuth認証コールバック
+// @Description  OAuth認証のコールバックを処理し、JWTトークンを発行します
+// @Tags         oauth
+// @Produce      json
+// @Param        provider  path  string  true  "プロバイダー名"  Enums(github, google)
+// @Success      200       {object}  OAuthResponse
+// @Failure      400       {object}  ErrorResponse
+// @Failure      401       {object}  ErrorResponse
+// @Failure      500       {object}  ErrorResponse
+// @Router       /auth/{provider}/callback [get]
 func (h *OAuthHandler) CallbackAuthHandler(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -115,8 +132,17 @@ func (h *OAuthHandler) CallbackAuthHandler(c *gin.Context) {
 	})
 }
 
-// RefreshTokenHandler リフレッシュトークンを使用して新しいトークンペアを生成
-// POST /auth/refresh
+// RefreshTokenHandler godoc
+// @Summary      OAuthトークン更新
+// @Description  リフレッシュトークンを使用して新しいトークンペアを生成します
+// @Tags         oauth
+// @Accept       json
+// @Produce      json
+// @Param        body  body  RefreshTokenRequest  true  "リフレッシュトークン"
+// @Success      200   {object}  TokenResponse
+// @Failure      400   {object}  ErrorResponse
+// @Failure      401   {object}  ErrorResponse
+// @Router       /auth/oauth/refresh [post]
 func (h *OAuthHandler) RefreshTokenHandler(c *gin.Context) {
 	var req struct {
 		RefreshToken string `json:"refresh_token" binding:"required"`
@@ -140,8 +166,14 @@ func (h *OAuthHandler) RefreshTokenHandler(c *gin.Context) {
 	})
 }
 
-// LogoutHandler ログアウト処理
-// POST /auth/logout
+// LogoutHandler godoc
+// @Summary      OAuthログアウト
+// @Description  OAuthログアウト処理を行います
+// @Tags         oauth
+// @Accept       json
+// @Produce      json
+// @Success      200   {object}  MessageResponse
+// @Router       /auth/oauth/logout [post]
 func (h *OAuthHandler) LogoutHandler(c *gin.Context) {
 	// クライアント側でトークンを削除することを前提とする
 	// 必要に応じてブラックリストにトークンを追加する処理を追加可能
