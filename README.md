@@ -122,7 +122,7 @@ graph TD
     B --> A
     F --> A
 ```
-![画面構成](./画面構成.png)
+![画面構成](./img/画面構成.png)
 
 # Step 2. ER図 / GORMモデル
 
@@ -201,4 +201,4 @@ graph TD
 | flag           | TEXT         | 提出された flag                    |
 | is_correct     | BOOLEAN      | 正解かどうか                       |
 
-![ER図](./DB_ER図.png)
+![ER図](./img/DB_ER図.png)
