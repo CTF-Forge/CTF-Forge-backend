@@ -25,6 +25,7 @@ import (
 	"github.com/Saku0512/CTFLab/ctflab/config"
 	_ "github.com/Saku0512/CTFLab/ctflab/docs" // Swagger docs
 	"github.com/Saku0512/CTFLab/ctflab/internal/models"
+	"github.com/Saku0512/CTFLab/ctflab/internal/repository"
 	"github.com/Saku0512/CTFLab/ctflab/internal/router"
 	"github.com/Saku0512/CTFLab/ctflab/oauth"
 )
@@ -68,6 +69,10 @@ func main() {
 	}
 
 	log.Println("Migration successful")
+
+	if err := repository.InitCategories(db); err != nil {
+		log.Fatalf("カテゴリー初期化エラー: %v", err)
+	}
 
 	oauth.Init()
 
