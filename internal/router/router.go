@@ -23,6 +23,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	// リポジトリの初期化
 	userRepo := repository.NewUserRepository(db)
 	oauthRepo := repository.NewOAuthAccountRepository(db)
+	challengeRepo := repository.NewChallengeRepository(db)
 
 	// JWTマネージャーの初期化
 	jwtManager := token.NewJWTManager(
@@ -36,10 +37,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	// サービスの初期化
 	authService := service.NewAuthService(userRepo, jwtManager)
 	oauthService := service.NewOAuthService(oauthRepo, userRepo, jwtManager)
+	challengeService := service.NewChallengeService(challengeRepo)
 
 	// ハンドラーの初期化
 	authHandler := handler.NewAuthHandler(authService)
 	oauthHandler := handler.NewOAuthHandler(oauthService, jwtManager)
+	challengeHandler := handler.NewChallengeHandler(challengeService)
 
 	// Swagger UI
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -66,6 +69,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	{
 		// ユーザー関連
 		protectedGroup.GET("/me", authHandler.Me)
+		protectedGroup.POST("/challenges", challengeHandler.CreateChallenge)
 		// ここに他の保護されたエンドポイントを追加
 		// 例: 問題作成、提出履歴など
 	}
