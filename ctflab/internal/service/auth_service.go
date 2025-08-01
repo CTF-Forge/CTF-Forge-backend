@@ -71,3 +71,8 @@ func (s *AuthService) ValidateToken(tokenStr string) (*token.UserClaims, error) 
 func (s *AuthService) IsTokenExpired(tokenStr string) bool {
 	return s.jwtManager.IsTokenExpired(tokenStr)
 }
+
+// GetUserByID ユーザーIDでユーザー情報を取得
+func (s *AuthService) GetUserByID(ctx context.Context, id uint) (*models.User, error) {
+	return s.userRepo.GetByID(ctx, id)
+}

@@ -65,15 +65,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	protectedGroup.Use(token.AuthMiddleware(jwtManager))
 	{
 		// ユーザー関連
-		protectedGroup.GET("/me", func(c *gin.Context) {
-			userID, _ := token.GetUserID(c)
-			username, _ := token.GetUsername(c)
-			c.JSON(200, gin.H{
-				"user_id":  userID,
-				"username": username,
-			})
-		})
-
+		protectedGroup.GET("/me", authHandler.Me)
 		// ここに他の保護されたエンドポイントを追加
 		// 例: 問題作成、提出履歴など
 	}

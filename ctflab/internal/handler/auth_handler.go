@@ -198,3 +198,49 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 	// 必要に応じてブラックリストにトークンを追加する処理を追加可能
 	c.JSON(http.StatusOK, gin.H{"message": "logout successful"})
 }
+
+// MeResponse swag用
+// @Description 自分のユーザー情報
+// @Tags user
+// @Success 200 {object} MeResponse
+// @Failure 401 {object} ErrorResponse
+// @Router /api/me [get]
+type MeResponse struct {
+	UserID    uint      `json:"user_id" example:"1"`
+	Username  string    `json:"username" example:"testuser"`
+	Email     string    `json:"email" example:"test@example.com"`
+	CreatedAt time.Time `json:"created_at" example:"2024-08-01T12:34:56Z"`
+}
+
+// Me godoc
+// @Summary      自分のユーザー情報取得
+// @Description  JWT認証ユーザーの情報を返す
+// @Tags         user
+// @Security     bearer
+// @Produce      json
+// @Success      200   {object}  MeResponse
+// @Failure      401   {object}  ErrorResponse
+// @Router       /api/me [get]
+func (h *AuthHandler) Me(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "unauthorized"})
+		return
+	}
+	id, ok := userID.(uint)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "invalid user id"})
+		return
+	}
+	user, err := h.authService.GetUserByID(c.Request.Context(), id)
+	if err != nil || user == nil {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "user not found"})
+		return
+	}
+	c.JSON(http.StatusOK, MeResponse{
+		UserID:    user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+	})
+}
