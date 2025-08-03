@@ -11,6 +11,7 @@ import (
 type ChallengeRepository interface {
 	Create(ctx context.Context, challenge *models.Challenge) error
 	FindCategoryByName(ctx context.Context, name string) (*models.ChallengeCategory, error)
+	CollectByUserID(ctx context.Context, userID uint) ([]*models.Challenge, error)
 }
 
 type challengeRepo struct {
@@ -37,4 +38,14 @@ func (r *challengeRepo) FindCategoryByName(ctx context.Context, name string) (*m
 		return nil, err
 	}
 	return &category, nil
+}
+
+// CollectByUserIDは、指定されたユーザーIDに関連付けられたチャレンジをすべて取得します。
+func (r *challengeRepo) CollectByUserID(ctx context.Context, userID uint) ([]*models.Challenge, error) {
+	var challenges []*models.Challenge
+	err := r.db.WithContext(ctx).Where("user_id = ?", userID).Find(&challenges).Error
+	if err != nil {
+		return nil, err
+	}
+	return challenges, nil
 }

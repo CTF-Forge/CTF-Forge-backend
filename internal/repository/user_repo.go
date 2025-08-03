@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/Saku0512/CTFLab/ctflab/internal/models"
 	"gorm.io/gorm"
@@ -15,6 +16,7 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
 	GetByUsername(ctx context.Context, username string) (*models.User, error)
 	UpdatePassword(ctx context.Context, userID uint, newHash string) error
+	GetIDByUsername(ctx context.Context, username string) (uint, error)
 }
 
 // userRepo はUserRepositoryの実装です。
@@ -42,14 +44,29 @@ func (r *userRepo) GetByID(ctx context.Context, id uint) (*models.User, error) {
 	return &user, nil
 }
 
+// GetByEmail は email からユーザーを取得します
 func (r *userRepo) GetByEmail(ctx context.Context, email string) (*models.User, error) {
 	var user models.User
-	if err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+
+	// GORMのResultオブジェクトを受け取るパターンに修正
+	result := r.db.WithContext(ctx).Where("email = ?", email).First(&user)
+
+	// エラーハンドリング
+	if result.Error != nil {
+		// レコードが見つからないエラーの場合、nilを返す
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			log.Printf("User with email '%s' not found.", email)
 			return nil, nil
 		}
-		return nil, err
+		// その他のエラーの場合、エラーを返す
+		log.Printf("Database error fetching user by email '%s': %v", email, result.Error)
+		return nil, result.Error
 	}
+
+	// デバッグログ: ユーザーが見つかったことを確認
+	log.Printf("Found user with email '%s'. Rows affected: %d", email, result.RowsAffected)
+
+	// 成功した場合、ユーザーポインタとnilエラーを返す
 	return &user, nil
 }
 
@@ -73,4 +90,19 @@ func (r *userRepo) UpdatePassword(ctx context.Context, userID uint, newHash stri
 		return errors.New("user not found")
 	}
 	return nil
+}
+
+// GetIDByUsernameはユーザー名からUserIDを取得する関数
+func (r *userRepo) GetIDByUsername(ctx context.Context, username string) (uint, error) {
+	var user models.User
+	// ユーザー名で検索し、結果をuser変数に格納
+	result := r.db.WithContext(ctx).Select("id").Where("username = ?", username).First(&user)
+
+	if result.Error != nil {
+		// レコードが見つからない場合もエラーとして扱う
+		return 0, result.Error
+	}
+
+	// ユーザーIDを返す
+	return user.ID, nil
 }

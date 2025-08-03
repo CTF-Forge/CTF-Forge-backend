@@ -10,21 +10,24 @@ import (
 
 type ChallengeService interface {
 	CreateChallenge(ctx context.Context, challenge *models.Challenge, categoryName string) error
+	CollectByUsername(ctx context.Context, username string) ([]*models.Challenge, error)
 }
 
 type challengeService struct {
-	repo repository.ChallengeRepository
+	challengerepo repository.ChallengeRepository
+	userrepo      repository.UserRepository
 }
 
-func NewChallengeService(repo repository.ChallengeRepository) ChallengeService {
-	return &challengeService{repo: repo}
+// 以前の修正コード
+func NewChallengeService(challengerepo repository.ChallengeRepository, userrepo repository.UserRepository) ChallengeService {
+	return &challengeService{challengerepo: challengerepo, userrepo: userrepo}
 }
 
 // CreateChallengeは、カテゴリー名を解決して新しい問題をデータベースに保存します。
 func (s *challengeService) CreateChallenge(ctx context.Context, challenge *models.Challenge, categoryName string) error {
 	// カテゴリー名が提供されている場合、IDを検索します
 	if categoryName != "" {
-		category, err := s.repo.FindCategoryByName(ctx, categoryName)
+		category, err := s.challengerepo.FindCategoryByName(ctx, categoryName)
 		if err != nil {
 			return fmt.Errorf("failed to find category: %w", err)
 		}
@@ -38,5 +41,13 @@ func (s *challengeService) CreateChallenge(ctx context.Context, challenge *model
 	}
 
 	// サービスはリポジトリのCreateメソッドを呼び出してデータベース操作を行います
-	return s.repo.Create(ctx, challenge)
+	return s.challengerepo.Create(ctx, challenge)
+}
+
+func (s *challengeService) CollectByUsername(ctx context.Context, username string) ([]*models.Challenge, error) {
+	userID, err := s.userrepo.GetIDByUsername(ctx, username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user ID: %w", err)
+	}
+	return s.challengerepo.CollectByUserID(ctx, userID)
 }

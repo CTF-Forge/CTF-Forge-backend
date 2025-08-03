@@ -22,6 +22,7 @@ func InitDB() {
 
 	dsn := fmt.Sprintf("%s", supabaseURL)
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	log.Println("Using DSN:", dsn) // この行を追加
 
 	if err != nil {
 		log.Fatal("failed to connect to database:", err)

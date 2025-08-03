@@ -37,7 +37,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	// サービスの初期化
 	authService := service.NewAuthService(userRepo, jwtManager)
 	oauthService := service.NewOAuthService(oauthRepo, userRepo, jwtManager)
-	challengeService := service.NewChallengeService(challengeRepo)
+	challengeService := service.NewChallengeService(challengeRepo, userRepo)
 
 	// ハンドラーの初期化
 	authHandler := handler.NewAuthHandler(authService)
@@ -70,6 +70,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		// ユーザー関連
 		protectedGroup.GET("/me", authHandler.Me)
 		protectedGroup.POST("/challenges", challengeHandler.CreateChallenge)
+		protectedGroup.GET("/challenges", challengeHandler.CollectChallengesByUsername)
 		// ここに他の保護されたエンドポイントを追加
 		// 例: 問題作成、提出履歴など
 	}

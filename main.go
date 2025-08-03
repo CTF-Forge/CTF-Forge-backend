@@ -21,13 +21,14 @@ package main
 
 import (
 	"log"
+	"os"
+	"time"
 
 	"github.com/Saku0512/CTFLab/ctflab/config"
 	_ "github.com/Saku0512/CTFLab/ctflab/docs" // Swagger docs
-	"github.com/Saku0512/CTFLab/ctflab/internal/models"
-	"github.com/Saku0512/CTFLab/ctflab/internal/repository"
 	"github.com/Saku0512/CTFLab/ctflab/internal/router"
 	"github.com/Saku0512/CTFLab/ctflab/oauth"
+	"gorm.io/gorm/logger"
 )
 
 // @title CTFLab API
@@ -54,25 +55,18 @@ func main() {
 	config.InitDB()
 	db := config.GetDB()
 
-	err := db.AutoMigrate(
-		&models.User{},
-		&models.OAuthAccount{}, // OAuthアカウントテーブルを追加
-		&models.ChallengeCategory{},
-		&models.Challenge{},
-		&models.ChallengeFile{},
-		&models.DockerChallenge{},
-		&models.Submission{},
+	// main.go の db := config.GetDB() の後に以下のコードを追加
+	db.Logger = logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold:             time.Second, // Slow SQL threshold
+			LogLevel:                  logger.Info, // Log level
+			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
+			Colorful:                  false,       // Disable color
+		},
 	)
 
-	if err != nil {
-		log.Fatal("migration failed:", err)
-	}
-
-	log.Println("Migration successful")
-
-	if err := repository.InitCategories(db); err != nil {
-		log.Fatalf("カテゴリー初期化エラー: %v", err)
-	}
+	// これで、実行されるすべてのSQLクエリがログに出力されます
 
 	oauth.Init()
 

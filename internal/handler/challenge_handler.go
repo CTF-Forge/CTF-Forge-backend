@@ -62,3 +62,31 @@ func (h *ChallengeHandler) CreateChallenge(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Challenge created successfully"})
 }
+
+// @Summary ユーザーが作成した問題を取得
+// @Description 認証されたユーザーが作成した問題のリストを取得します
+// @Tags challenges
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {array} models.Challenge
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/me/challenges [get]
+func (h *ChallengeHandler) CollectChallengesByUsername(c *gin.Context) {
+	// 認証されたユーザー名を取得
+	username, exists := token.GetUsername(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	// サービス層のCollectByUsernameを呼び出してチャレンジを取得
+	challenges, err := h.service.CollectByUsername(c.Request.Context(), username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get challenges: " + err.Error()})
+		return
+	}
+
+	// 取得したチャレンジをJSONで返す
+	c.JSON(http.StatusOK, challenges)
+}
