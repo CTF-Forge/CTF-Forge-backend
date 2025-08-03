@@ -70,7 +70,7 @@ Step 6. Wails統合
 
 ## MVP
 - 認証機能
-    - Github / Microsoft アカウントでログイン (OAuth2)
+    - Github / Google アカウントでログイン (OAuth2)
 - ユーザー管理
     - 自分のプロフィール閲覧(表示名、問題数など)
     - ログアウト
