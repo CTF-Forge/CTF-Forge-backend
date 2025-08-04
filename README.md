@@ -252,3 +252,7 @@ CTF（Capture The Flag）プラットフォームのユーザーが、問題の�
 - **ヒントの取得**
     - **エンドポイント**: `GET /api/challenges/:challengeId/hints`
     - **目的**: チャレンジのヒントを提供します。ヒントの取得には、ポイントの消費などペナルティを設けることも考えられます。
+
+
+https://ctf-forge-backend.onrender.com
+でAPIデプロイしている
