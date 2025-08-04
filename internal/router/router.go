@@ -6,6 +6,7 @@ import (
 	"github.com/Saku0512/CTFLab/ctflab/internal/repository"
 	"github.com/Saku0512/CTFLab/ctflab/internal/service"
 	"github.com/Saku0512/CTFLab/ctflab/pkg/token"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	"github.com/markbates/goth/gothic"
@@ -16,6 +17,16 @@ import (
 
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
+
+	// CORSミドルウェアの設定
+	dbconfig := cors.DefaultConfig()
+	dbconfig.AllowOrigins = []string{"*"} // 本番環境では特定のオリジンに制限してください
+	dbconfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	dbconfig.AllowHeaders = []string{"Origin", "Content-Type", "Authorization"}
+	dbconfig.ExposeHeaders = []string{"Content-Length"}
+	dbconfig.AllowCredentials = true
+
+	r.Use(cors.New(dbconfig))
 
 	// セッションストア
 	gothic.Store = sessions.NewCookieStore([]byte(config.GetSessionSecret()))
