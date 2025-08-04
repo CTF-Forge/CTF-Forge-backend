@@ -76,3 +76,7 @@ func (s *AuthService) IsTokenExpired(tokenStr string) bool {
 func (s *AuthService) GetUserByID(ctx context.Context, id uint) (*models.User, error) {
 	return s.userRepo.GetByID(ctx, id)
 }
+
+func (s *AuthService) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+	return s.userRepo.GetByEmail(ctx, email)
+}

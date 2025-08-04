@@ -141,11 +141,22 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	var user *models.User
+	user, err = h.authService.GetUserByEmail(c.Request.Context(), req.Email)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message":       "login successful",
 		"access_token":  tokenPair.AccessToken,
 		"refresh_token": tokenPair.RefreshToken,
 		"expires_in":    tokenPair.ExpiresIn,
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+		},
 	})
 }
 

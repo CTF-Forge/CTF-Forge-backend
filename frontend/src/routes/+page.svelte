@@ -1,2 +1,11 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script>
+  import Login from './lib/components/Login.svelte';
+  import { user } from './lib/store.js';
+</script>
+
+{#if $user}
+  <h1>Welcome, {$user.username}!</h1>
+  <p>Your user ID is: {$user.id}</p>
+{:else}
+  <Login />
+{/if}
