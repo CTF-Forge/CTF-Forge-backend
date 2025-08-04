@@ -236,3 +236,44 @@ func (h *ChallengeHandler) GetPublicChallenge(c *gin.Context) {
 
 	c.JSON(http.StatusOK, challenge)
 }
+
+// @Summary フラグを提出
+// @Description 問題にフラグを提出し、正解かどうかを検証します
+// @Tags challenges
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param challengeId path int true "Challenge ID"
+// @Param submission body dtos.SubmissionRequest true "提出情報"
+// @Success 200 {object} dtos.SubmissionResponse "提出結果"
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/challenges/{challengeId}/submit [post]
+func (h *ChallengeHandler) SubmitFlag(c *gin.Context) {
+	challengeID, err := strconv.ParseUint(c.Param("challengeId"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid challenge ID"})
+		return
+	}
+
+	var req dtos.SubmissionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
+		return
+	}
+
+	userID, exists := token.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	correct, err := h.service.SubmitFlag(c.Request.Context(), uint(challengeID), userID, req.Flag)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process submission: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Submission processed", "correct": correct})
+}

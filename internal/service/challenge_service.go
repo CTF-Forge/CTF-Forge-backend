@@ -17,6 +17,7 @@ type ChallengeService interface {
 	DeleteChallenge(ctx context.Context, challengeID uint, userID uint) error
 	GetChallengeByID(ctx context.Context, challengeID uint, userID uint) (*dtos.ChallengeDetailResponse, error)
 	GetPublicChallengeByID(ctx context.Context, challengeID uint, userID uint) (*dtos.ChallengePublicDTO, error)
+	SubmitFlag(ctx context.Context, challengeID uint, userID uint, flag string) (bool, error)
 }
 
 type challengeService struct {
@@ -158,4 +159,26 @@ func (s *challengeService) GetPublicChallengeByID(ctx context.Context, challenge
 		Score:       challenge.Score,
 		IsSolved:    isSolved,
 	}, nil
+}
+
+func (s *challengeService) SubmitFlag(ctx context.Context, challengeID uint, userID uint, flag string) (bool, error) {
+	challenge, err := s.challengerepo.GetByID(ctx, challengeID)
+	if err != nil {
+		return false, err
+	}
+
+	correct := challenge.Flag == flag
+
+	submission := &models.Submission{
+		UserID:      userID,
+		ChallengeID: challengeID,
+		Flag:        flag,
+		IsCorrect:   correct,
+	}
+
+	if err := s.challengerepo.CreateSubmission(ctx, submission); err != nil {
+		return false, err
+	}
+
+	return correct, nil
 }

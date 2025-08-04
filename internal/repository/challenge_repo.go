@@ -17,6 +17,7 @@ type ChallengeRepository interface {
 	Delete(ctx context.Context, id uint) error
 	GetPublicByID(ctx context.Context, id uint) (*models.Challenge, error)
 	IsSolved(ctx context.Context, challengeID uint, userID uint) (bool, error)
+	CreateSubmission(ctx context.Context, submission *models.Submission) error
 }
 
 type challengeRepo struct {
@@ -89,4 +90,8 @@ func (r *challengeRepo) IsSolved(ctx context.Context, challengeID uint, userID u
 		return false, err
 	}
 	return count > 0, nil
+}
+
+func (r *challengeRepo) CreateSubmission(ctx context.Context, submission *models.Submission) error {
+	return r.db.WithContext(ctx).Create(submission).Error
 }

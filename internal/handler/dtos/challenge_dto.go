@@ -40,3 +40,13 @@ type ChallengeDetailResponse struct {
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
+
+// SubmissionRequest はフラグ提出APIのリクエストボディを定義します。
+type SubmissionRequest struct {
+	Flag string `json:"flag" binding:"required"`
+}
+
+type SubmissionResponse struct {
+	Message string `json:"message"`
+	Correct bool   `json:"correct"`
+}
