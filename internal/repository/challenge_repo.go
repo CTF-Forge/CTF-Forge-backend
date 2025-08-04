@@ -15,6 +15,8 @@ type ChallengeRepository interface {
 	GetByID(ctx context.Context, id uint) (*models.Challenge, error)
 	Update(ctx context.Context, challenge *models.Challenge) error
 	Delete(ctx context.Context, id uint) error
+	GetPublicByID(ctx context.Context, id uint) (*models.Challenge, error)
+	IsSolved(ctx context.Context, challengeID uint, userID uint) (bool, error)
 }
 
 type challengeRepo struct {
@@ -55,7 +57,7 @@ func (r *challengeRepo) CollectByUserID(ctx context.Context, userID uint) ([]*mo
 
 func (r *challengeRepo) GetByID(ctx context.Context, id uint) (*models.Challenge, error) {
 	var challenge models.Challenge
-	if err := r.db.WithContext(ctx).First(&challenge, id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Category").First(&challenge, id).Error; err != nil {
 		return nil, err
 	}
 	return &challenge, nil
@@ -67,4 +69,24 @@ func (r *challengeRepo) Update(ctx context.Context, challenge *models.Challenge)
 
 func (r *challengeRepo) Delete(ctx context.Context, id uint) error {
 	return r.db.WithContext(ctx).Delete(&models.Challenge{}, id).Error
+}
+
+func (r *challengeRepo) GetPublicByID(ctx context.Context, id uint) (*models.Challenge, error) {
+	var challenge models.Challenge
+	if err := r.db.WithContext(ctx).Preload("Category").Where("is_public = ?", true).First(&challenge, id).Error; err != nil {
+		return nil, err
+	}
+	return &challenge, nil
+}
+
+func (r *challengeRepo) IsSolved(ctx context.Context, challengeID uint, userID uint) (bool, error) {
+	if userID == 0 {
+		return false, nil
+	}
+	var count int64
+	err := r.db.WithContext(ctx).Model(&models.Submission{}).Where("challenge_id = ? AND user_id = ? AND is_correct = ?", challengeID, userID, true).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

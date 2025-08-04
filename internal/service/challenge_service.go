@@ -16,6 +16,7 @@ type ChallengeService interface {
 	UpdateChallenge(ctx context.Context, challengeID uint, userID uint, req *dtos.UpdateChallengeRequest) error
 	DeleteChallenge(ctx context.Context, challengeID uint, userID uint) error
 	GetChallengeByID(ctx context.Context, challengeID uint, userID uint) (*dtos.ChallengeDetailResponse, error)
+	GetPublicChallengeByID(ctx context.Context, challengeID uint, userID uint) (*dtos.ChallengePublicDTO, error)
 }
 
 type challengeService struct {
@@ -135,5 +136,26 @@ func (s *challengeService) GetChallengeByID(ctx context.Context, challengeID uin
 		Score:       challenge.Score,
 		Flag:        challenge.Flag,
 		IsPublic:    challenge.IsPublic,
+	}, nil
+}
+
+func (s *challengeService) GetPublicChallengeByID(ctx context.Context, challengeID uint, userID uint) (*dtos.ChallengePublicDTO, error) {
+	challenge, err := s.challengerepo.GetPublicByID(ctx, challengeID)
+	if err != nil {
+		return nil, err
+	}
+
+	isSolved, err := s.challengerepo.IsSolved(ctx, challengeID, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtos.ChallengePublicDTO{
+		ID:          challenge.ID,
+		Title:       challenge.Title,
+		Description: challenge.Description,
+		Category:    challenge.Category.Name,
+		Score:       challenge.Score,
+		IsSolved:    isSolved,
 	}, nil
 }

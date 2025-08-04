@@ -206,3 +206,32 @@ func (h *ChallengeHandler) GetChallenge(c *gin.Context) {
 
 	c.JSON(http.StatusOK, challenge)
 }
+
+// @Summary 公開用の問題詳細を取得
+// @Description 問題IDを指定して、公開用の問題詳細を取得します
+// @Tags public_challenges
+// @Produce json
+// @Param challengeId path int true "Challenge ID"
+// @Success 200 {object} dtos.ChallengePublicDTO
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/public/challenges/{challengeId} [get]
+func (h *ChallengeHandler) GetPublicChallenge(c *gin.Context) {
+	challengeID, err := strconv.ParseUint(c.Param("challengeId"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid challenge ID"})
+		return
+	}
+
+	// 認証は不要だが、もしユーザーが認証されていればその情報を利用できる
+	userID, _ := token.GetUserID(c)
+
+	challenge, err := h.service.GetPublicChallengeByID(c.Request.Context(), uint(challengeID), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get challenge: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, challenge)
+}

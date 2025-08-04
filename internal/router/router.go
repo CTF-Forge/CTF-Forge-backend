@@ -96,6 +96,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 				})
 			}
 		})
+		publicGroup.GET("/challenges/:challengeId", challengeHandler.GetPublicChallenge)
 	}
 
 	// ヘルスチェック
