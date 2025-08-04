@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Saku0512/CTFLab/ctflab/internal/handler/dtos"
-	"github.com/Saku0512/CTFLab/ctflab/internal/models"
-	"github.com/Saku0512/CTFLab/ctflab/internal/service"
-	"github.com/Saku0512/CTFLab/ctflab/pkg/token"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/handler/dtos"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/models"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/service"
+	"github.com/CTF-Forge/CTF-Forge-backend/pkg/token"
 	"github.com/gin-gonic/gin"
 )
 

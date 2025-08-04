@@ -24,10 +24,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/Saku0512/CTFLab/ctflab/config"
-	_ "github.com/Saku0512/CTFLab/ctflab/docs" // Swagger docs
-	"github.com/Saku0512/CTFLab/ctflab/internal/router"
-	"github.com/Saku0512/CTFLab/ctflab/oauth"
+	"github.com/CTF-Forge/CTF-Forge-backend/config"
+	_ "github.com/CTF-Forge/CTF-Forge-backend/docs" // Swagger docs
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/router"
+	"github.com/CTF-Forge/CTF-Forge-backend/oauth"
 	"gorm.io/gorm/logger"
 )
 

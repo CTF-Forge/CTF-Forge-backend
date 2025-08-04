@@ -1,11 +1,11 @@
 package router
 
 import (
-	"github.com/Saku0512/CTFLab/ctflab/config"
-	"github.com/Saku0512/CTFLab/ctflab/internal/handler"
-	"github.com/Saku0512/CTFLab/ctflab/internal/repository"
-	"github.com/Saku0512/CTFLab/ctflab/internal/service"
-	"github.com/Saku0512/CTFLab/ctflab/pkg/token"
+	"github.com/CTF-Forge/CTF-Forge-backend/config"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/handler"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/repository"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/service"
+	"github.com/CTF-Forge/CTF-Forge-backend/pkg/token"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"

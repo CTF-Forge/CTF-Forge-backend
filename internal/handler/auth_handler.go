@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 
-	"github.com/Saku0512/CTFLab/ctflab/internal/models"
-	"github.com/Saku0512/CTFLab/ctflab/internal/service"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/models"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/service"
 )
 
 // Swag用のレスポンス型定義

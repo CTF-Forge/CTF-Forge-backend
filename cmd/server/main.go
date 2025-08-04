@@ -1,6 +1,6 @@
 package server
 
-import docs "github.com/Saku0512/CTFLab/ctflab/docs"
+import docs "github.com/CTF-Forge/CTF-Forge-backend/docs"
 
 func init() {
 	docs.SwaggerInfo.Title = "CTFLab API"

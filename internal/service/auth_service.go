@@ -6,9 +6,9 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/Saku0512/CTFLab/ctflab/internal/models"
-	"github.com/Saku0512/CTFLab/ctflab/internal/repository"
-	"github.com/Saku0512/CTFLab/ctflab/pkg/token"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/models"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/repository"
+	"github.com/CTF-Forge/CTF-Forge-backend/pkg/token"
 )
 
 // AuthService は認証に関わるビジネスロジックを提供します。

@@ -1,7 +1,7 @@
 package oauth
 
 import (
-	"github.com/Saku0512/CTFLab/ctflab/config"
+	"github.com/CTF-Forge/CTF-Forge-backend/config"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Saku0512/CTFLab/ctflab/internal/handler/dtos"
-	"github.com/Saku0512/CTFLab/ctflab/internal/models"
-	"github.com/Saku0512/CTFLab/ctflab/internal/repository"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/handler/dtos"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/models"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/repository"
 )
 
 type ChallengeService interface {

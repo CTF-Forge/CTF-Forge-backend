@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Saku0512/CTFLab/ctflab/internal/service"
-	"github.com/Saku0512/CTFLab/ctflab/pkg/token"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/service"
+	"github.com/CTF-Forge/CTF-Forge-backend/pkg/token"
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
 )

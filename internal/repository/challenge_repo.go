@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/Saku0512/CTFLab/ctflab/internal/models"
+	"github.com/CTF-Forge/CTF-Forge-backend/internal/models"
 	"gorm.io/gorm"
 )
 
