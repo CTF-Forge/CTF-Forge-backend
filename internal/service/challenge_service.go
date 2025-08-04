@@ -14,6 +14,7 @@ type ChallengeService interface {
 	CreateChallenge(ctx context.Context, challenge *models.Challenge, categoryName string) error
 	CollectByUsername(ctx context.Context, username string) ([]*models.Challenge, error)
 	UpdateChallenge(ctx context.Context, challengeID uint, userID uint, req *dtos.UpdateChallengeRequest) error
+	DeleteChallenge(ctx context.Context, challengeID uint, userID uint) error
 }
 
 type challengeService struct {
@@ -95,4 +96,17 @@ func (s *challengeService) UpdateChallenge(ctx context.Context, challengeID uint
 	}
 
 	return s.challengerepo.Update(ctx, challenge)
+}
+
+func (s *challengeService) DeleteChallenge(ctx context.Context, challengeID uint, userID uint) error {
+	challenge, err := s.challengerepo.GetByID(ctx, challengeID)
+	if err != nil {
+		return err
+	}
+
+	if challenge.UserID != userID {
+		return errors.New("user is not the owner of the challenge")
+	}
+
+	return s.challengerepo.Delete(ctx, challengeID)
 }

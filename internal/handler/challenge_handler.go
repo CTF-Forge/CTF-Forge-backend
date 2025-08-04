@@ -136,3 +136,38 @@ func (h *ChallengeHandler) UpdateChallenge(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Challenge updated successfully"})
 }
+
+// @Summary 問題を削除
+// @Description 既存の問題を削除します
+// @Tags challenges
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param challengeId path int true "Challenge ID"
+// @Success 200 {object} MessageResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 403 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/challenges/{challengeId} [delete]
+func (h *ChallengeHandler) DeleteChallenge(c *gin.Context) {
+	challengeID, err := strconv.ParseUint(c.Param("challengeId"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid challenge ID"})
+		return
+	}
+
+	userID, exists := token.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	if err := h.service.DeleteChallenge(c.Request.Context(), uint(challengeID), userID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete challenge: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Challenge deleted successfully"})
+}

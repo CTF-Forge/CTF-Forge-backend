@@ -14,6 +14,7 @@ type ChallengeRepository interface {
 	CollectByUserID(ctx context.Context, userID uint) ([]*models.Challenge, error)
 	GetByID(ctx context.Context, id uint) (*models.Challenge, error)
 	Update(ctx context.Context, challenge *models.Challenge) error
+	Delete(ctx context.Context, id uint) error
 }
 
 type challengeRepo struct {
@@ -62,4 +63,8 @@ func (r *challengeRepo) GetByID(ctx context.Context, id uint) (*models.Challenge
 
 func (r *challengeRepo) Update(ctx context.Context, challenge *models.Challenge) error {
 	return r.db.WithContext(ctx).Save(challenge).Error
+}
+
+func (r *challengeRepo) Delete(ctx context.Context, id uint) error {
+	return r.db.WithContext(ctx).Delete(&models.Challenge{}, id).Error
 }
