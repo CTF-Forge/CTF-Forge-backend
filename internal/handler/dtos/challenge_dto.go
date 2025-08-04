@@ -24,6 +24,17 @@ type ChallengeCreateResponse struct {
 	Message string `json:"message"`
 }
 
+// ChallengeDetailResponse は問題詳細取得APIのレスポンスです。
+type ChallengeDetailResponse struct {
+	ID          uint    `json:"id"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Category    *string `json:"category"`
+	Score       int     `json:"score"`
+	Flag        string  `json:"flag"`
+	IsPublic    bool    `json:"is_public"`
+}
+
 // ErrorResponseはエラー発生時のレスポンスです。
 type ErrorResponse struct {
 	Error string `json:"error"`

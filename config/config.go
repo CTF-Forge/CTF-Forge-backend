@@ -21,12 +21,24 @@ func InitDB() {
 	supabaseURL := os.Getenv("SUPABASE_URL")
 
 	dsn := fmt.Sprintf("%s", supabaseURL)
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		PrepareStmt: false,
+	})
 	log.Println("Using DSN:", dsn) // この行を追加
 
 	if err != nil {
 		log.Fatal("failed to connect to database:", err)
 	}
+
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatal("failed to get generic database object:", err)
+	}
+
+	// 接続プールの設定
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 }
 
 func GetDB() *gorm.DB {
