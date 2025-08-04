@@ -53,6 +53,7 @@ func (h *ChallengeHandler) CreateChallenge(c *gin.Context) {
 		Description: req.Description,
 		Score:       req.Score,
 		Flag:        req.Flag,
+		IsPublic:    req.IsPublic,
 	}
 
 	// サービスを呼び出して問題を作成し、カテゴリー名を渡します

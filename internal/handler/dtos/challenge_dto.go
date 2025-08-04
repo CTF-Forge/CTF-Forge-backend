@@ -7,6 +7,7 @@ type CreateChallengeRequest struct {
 	Category    string `json:"category"` // カテゴリー名を文字列として受け取ります
 	Score       int    `json:"score" binding:"required"`
 	Flag        string `json:"flag" binding:"required"`
+	IsPublic    bool   `json:"is_public"`
 }
 
 // UpdateChallengeRequest は問題更新APIのリクエストボディを定義します。
