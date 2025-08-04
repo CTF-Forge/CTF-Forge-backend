@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/Saku0512/CTFLab/ctflab/internal/handler/dtos"
 	"github.com/Saku0512/CTFLab/ctflab/internal/models"
 	"github.com/Saku0512/CTFLab/ctflab/internal/repository"
 )
@@ -11,6 +13,7 @@ import (
 type ChallengeService interface {
 	CreateChallenge(ctx context.Context, challenge *models.Challenge, categoryName string) error
 	CollectByUsername(ctx context.Context, username string) ([]*models.Challenge, error)
+	UpdateChallenge(ctx context.Context, challengeID uint, userID uint, req *dtos.UpdateChallengeRequest) error
 }
 
 type challengeService struct {
@@ -50,4 +53,46 @@ func (s *challengeService) CollectByUsername(ctx context.Context, username strin
 		return nil, fmt.Errorf("failed to get user ID: %w", err)
 	}
 	return s.challengerepo.CollectByUserID(ctx, userID)
+}
+
+func (s *challengeService) UpdateChallenge(ctx context.Context, challengeID uint, userID uint, req *dtos.UpdateChallengeRequest) error {
+	challenge, err := s.challengerepo.GetByID(ctx, challengeID)
+	if err != nil {
+		return err
+	}
+
+	if challenge.UserID != userID {
+		return errors.New("user is not the owner of the challenge")
+	}
+
+	if req.Title != nil {
+		challenge.Title = *req.Title
+	}
+	if req.Description != nil {
+		challenge.Description = *req.Description
+	}
+	if req.Score != nil {
+		challenge.Score = *req.Score
+	}
+	if req.Flag != nil {
+		challenge.Flag = *req.Flag
+	}
+	if req.IsPublic != nil {
+		challenge.IsPublic = *req.IsPublic
+	}
+
+	if req.Category != nil {
+		category, err := s.challengerepo.FindCategoryByName(ctx, *req.Category)
+		if err != nil {
+			return fmt.Errorf("failed to find category: %w", err)
+		}
+		if category == nil {
+			return fmt.Errorf("category '%s' not found", *req.Category)
+		}
+		challenge.CategoryID = &category.ID
+	} else {
+		challenge.CategoryID = nil
+	}
+
+	return s.challengerepo.Update(ctx, challenge)
 }

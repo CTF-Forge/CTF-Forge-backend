@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/Saku0512/CTFLab/ctflab/internal/handler/dtos"
 	"github.com/Saku0512/CTFLab/ctflab/internal/models"
@@ -60,7 +61,10 @@ func (h *ChallengeHandler) CreateChallenge(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Challenge created successfully"})
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Challenge created successfully",
+		"id":      challenge.ID,
+	})
 }
 
 // @Summary ユーザーが作成した問題を取得
@@ -89,4 +93,46 @@ func (h *ChallengeHandler) CollectChallengesByUsername(c *gin.Context) {
 
 	// 取得したチャレンジをJSONで返す
 	c.JSON(http.StatusOK, challenges)
+}
+
+// @Summary 問題を更新
+// @Description 既存の問題を更新します
+// @Tags challenges
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param challengeId path int true "Challenge ID"
+// @Param challenge body dtos.UpdateChallengeRequest true "問題更新情報"
+// @Success 200 {object} MessageResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 403 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /api/challenges/{challengeId} [put]
+func (h *ChallengeHandler) UpdateChallenge(c *gin.Context) {
+	challengeID, err := strconv.ParseUint(c.Param("challengeId"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid challenge ID"})
+		return
+	}
+
+	var req dtos.UpdateChallengeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
+		return
+	}
+
+	userID, exists := token.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	if err := h.service.UpdateChallenge(c.Request.Context(), uint(challengeID), userID, &req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update challenge: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Challenge updated successfully"})
 }

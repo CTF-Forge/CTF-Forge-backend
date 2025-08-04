@@ -9,6 +9,16 @@ type CreateChallengeRequest struct {
 	Flag        string `json:"flag" binding:"required"`
 }
 
+// UpdateChallengeRequest は問題更新APIのリクエストボディを定義します。
+type UpdateChallengeRequest struct {
+	Title       *string `json:"title,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Category    *string `json:"category,omitempty"`
+	Score       *int    `json:"score,omitempty"`
+	Flag        *string `json:"flag,omitempty"`
+	IsPublic    *bool   `json:"is_public,omitempty"`
+}
+
 // ChallengeCreateResponseは問題作成成功時のレスポンスです。
 type ChallengeCreateResponse struct {
 	Message string `json:"message"`

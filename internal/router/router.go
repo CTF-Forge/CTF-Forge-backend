@@ -71,6 +71,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		protectedGroup.GET("/me", authHandler.Me)
 		protectedGroup.POST("/challenges", challengeHandler.CreateChallenge)
 		protectedGroup.GET("/challenges", challengeHandler.CollectChallengesByUsername)
+		protectedGroup.PUT("/challenges/:challengeId", challengeHandler.UpdateChallenge)
 		// ここに他の保護されたエンドポイントを追加
 		// 例: 問題作成、提出履歴など
 	}

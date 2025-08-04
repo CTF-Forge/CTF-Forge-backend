@@ -12,6 +12,8 @@ type ChallengeRepository interface {
 	Create(ctx context.Context, challenge *models.Challenge) error
 	FindCategoryByName(ctx context.Context, name string) (*models.ChallengeCategory, error)
 	CollectByUserID(ctx context.Context, userID uint) ([]*models.Challenge, error)
+	GetByID(ctx context.Context, id uint) (*models.Challenge, error)
+	Update(ctx context.Context, challenge *models.Challenge) error
 }
 
 type challengeRepo struct {
@@ -48,4 +50,16 @@ func (r *challengeRepo) CollectByUserID(ctx context.Context, userID uint) ([]*mo
 		return nil, err
 	}
 	return challenges, nil
+}
+
+func (r *challengeRepo) GetByID(ctx context.Context, id uint) (*models.Challenge, error) {
+	var challenge models.Challenge
+	if err := r.db.WithContext(ctx).First(&challenge, id).Error; err != nil {
+		return nil, err
+	}
+	return &challenge, nil
+}
+
+func (r *challengeRepo) Update(ctx context.Context, challenge *models.Challenge) error {
+	return r.db.WithContext(ctx).Save(challenge).Error
 }
