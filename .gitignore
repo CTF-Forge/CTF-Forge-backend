@@ -62,11 +62,9 @@ yarn-error.log*
 *.out
 
 # Go mod cache
-/pkg/
 /vendor/
 
 # OpenAPI (swag)
-docs/
 
 # ===============================
 # Node.js（SvelteKitフロントエンド）
