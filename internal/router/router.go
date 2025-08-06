@@ -95,19 +95,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	publicGroup.Use(token.OptionalAuthMiddleware(jwtManager))
 	{
 		// 問題一覧など、認証されていないユーザーもアクセス可能なエンドポイント
-		publicGroup.GET("/challenges", func(c *gin.Context) {
-			// 認証されている場合はユーザー情報を含める
-			if userID, exists := token.GetUserID(c); exists {
-				c.JSON(200, gin.H{
-					"message": "public challenges",
-					"user_id": userID,
-				})
-			} else {
-				c.JSON(200, gin.H{
-					"message": "public challenges",
-				})
-			}
-		})
+		publicGroup.GET("/challenges", challengeHandler.GetAllPublicChallenges)
 		publicGroup.GET("/challenges/:challengeId", challengeHandler.GetPublicChallenge)
 	}
 

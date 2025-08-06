@@ -16,6 +16,7 @@ type ChallengeRepository interface {
 	Update(ctx context.Context, challenge *models.Challenge) error
 	Delete(ctx context.Context, id uint) error
 	GetPublicByID(ctx context.Context, id uint) (*models.Challenge, error)
+	GetAllPublic(ctx context.Context) ([]*models.Challenge, error)
 	IsSolved(ctx context.Context, challengeID uint, userID uint) (bool, error)
 	CreateSubmission(ctx context.Context, submission *models.Submission) error
 }
@@ -78,6 +79,14 @@ func (r *challengeRepo) GetPublicByID(ctx context.Context, id uint) (*models.Cha
 		return nil, err
 	}
 	return &challenge, nil
+}
+
+func (r *challengeRepo) GetAllPublic(ctx context.Context) ([]*models.Challenge, error) {
+	var challenges []*models.Challenge
+	if err := r.db.WithContext(ctx).Preload("Category").Where("is_public = ?", true).Find(&challenges).Error; err != nil {
+		return nil, err
+	}
+	return challenges, nil
 }
 
 func (r *challengeRepo) IsSolved(ctx context.Context, challengeID uint, userID uint) (bool, error) {

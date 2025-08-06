@@ -17,6 +17,7 @@ type ChallengeService interface {
 	DeleteChallenge(ctx context.Context, challengeID uint, userID uint) error
 	GetChallengeByID(ctx context.Context, challengeID uint, userID uint) (*dtos.ChallengeDetailResponse, error)
 	GetPublicChallengeByID(ctx context.Context, challengeID uint, userID uint) (*dtos.ChallengePublicDTO, error)
+	GetAllPublicChallenges(ctx context.Context, userID uint) ([]*dtos.ChallengePublicDTO, error)
 	SubmitFlag(ctx context.Context, challengeID uint, userID uint, flag string) (bool, error)
 }
 
@@ -159,6 +160,31 @@ func (s *challengeService) GetPublicChallengeByID(ctx context.Context, challenge
 		Score:       challenge.Score,
 		IsSolved:    isSolved,
 	}, nil
+}
+
+func (s *challengeService) GetAllPublicChallenges(ctx context.Context, userID uint) ([]*dtos.ChallengePublicDTO, error) {
+	challenges, err := s.challengerepo.GetAllPublic(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	publicChallenges := make([]*dtos.ChallengePublicDTO, len(challenges))
+	for i, challenge := range challenges {
+		isSolved, err := s.challengerepo.IsSolved(ctx, challenge.ID, userID)
+		if err != nil {
+			return nil, err
+		}
+		publicChallenges[i] = &dtos.ChallengePublicDTO{
+			ID:          challenge.ID,
+			Title:       challenge.Title,
+			Description: challenge.Description,
+			Category:    challenge.Category.Name,
+			Score:       challenge.Score,
+			IsSolved:    isSolved,
+		}
+	}
+
+	return publicChallenges, nil
 }
 
 func (s *challengeService) SubmitFlag(ctx context.Context, challengeID uint, userID uint, flag string) (bool, error) {

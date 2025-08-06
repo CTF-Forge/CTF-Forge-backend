@@ -237,6 +237,25 @@ func (h *ChallengeHandler) GetPublicChallenge(c *gin.Context) {
 	c.JSON(http.StatusOK, challenge)
 }
 
+// @Summary 公開されているすべての問題を取得
+// @Description 公開されているすべての問題のリストを取得します
+// @Tags public_challenges
+// @Produce json
+// @Success 200 {array} dtos.ChallengePublicDTO
+// @Failure 500 {object} ErrorResponse
+// @Router /api/public/challenges [get]
+func (h *ChallengeHandler) GetAllPublicChallenges(c *gin.Context) {
+	userID, _ := token.GetUserID(c)
+
+	challenges, err := h.service.GetAllPublicChallenges(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get challenges: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, challenges)
+}
+
 // @Summary フラグを提出
 // @Description 問題にフラグを提出し、正解かどうかを検証します
 // @Tags challenges
