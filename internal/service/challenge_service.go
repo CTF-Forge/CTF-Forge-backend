@@ -174,11 +174,17 @@ func (s *challengeService) GetAllPublicChallenges(ctx context.Context, userID ui
 		if err != nil {
 			return nil, err
 		}
+
+		categoryName := ""
+		if challenge.Category != nil {
+			categoryName = challenge.Category.Name
+		}
+
 		publicChallenges[i] = &dtos.ChallengePublicDTO{
 			ID:          challenge.ID,
 			Title:       challenge.Title,
 			Description: challenge.Description,
-			Category:    challenge.Category.Name,
+			Category:    categoryName,
 			Score:       challenge.Score,
 			IsSolved:    isSolved,
 		}
