@@ -21,9 +21,12 @@ func InitDB() {
 	supabaseURL := os.Getenv("SUPABASE_URL")
 
 	dsn := fmt.Sprintf("%s", supabaseURL)
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		PrepareStmt: false,
+
+	dbConfig := postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true,
 	})
+	DB, err = gorm.Open(dbConfig, &gorm.Config{})
 	log.Println("Using DSN:", dsn) // この行を追加
 
 	if err != nil {
