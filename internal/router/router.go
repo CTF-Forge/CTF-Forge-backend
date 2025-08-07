@@ -96,7 +96,6 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	{
 		// 問題一覧など、認証されていないユーザーもアクセス可能なエンドポイント
 		publicGroup.GET("/challenges", challengeHandler.GetAllPublicChallenges)
-		publicGroup.GET("/challenges/:challengeId", challengeHandler.GetPublicChallenge)
 	}
 
 	// ヘルスチェック
