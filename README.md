@@ -1,4 +1,4 @@
-# CTFLab
+# CTFForge
 
 誰もがCTFの問題を作成し、公開できるアプリ。
 webとdesktopで公開する。
@@ -86,7 +86,7 @@ Step 6. Wails統合
     - 解答フォーム(flag入力→自動判定)
     - 解答履歴(自分がどれを解いたか)
 - 管理者・運用視点の最低限機能
-    - サンドボックス環境の自動デプロイ(例: `problem.user.ctflab.dev`)
+    - サンドボックス環境の自動デプロイ(例: `problem.user.ctfforge.dev`)
     - 問題ごとに独立したDocker環境を立てる
     - 運用負荷を減らす問題クリーンアップ(いい定時間後自動停止)
 
@@ -183,7 +183,7 @@ graph TD
 |----------------|--------------|------------------------------------|
 | id             | SERIAL PK    | Docker情報ID                       |
 | challenge_id   | INTEGER FK   | 対応する challenge                 |
-| image_tag      | TEXT         | 例：ctflab/bob-hoge:latest         |
+| image_tag      | TEXT         | 例：ctfforge/bob-hoge:latest         |
 | exposed_port   | INTEGER      | 起動時に公開するポート            |
 | entrypoint     | TEXT         | 実行エントリポイント               |
 | created_at     | TIMESTAMP    | 作成日時                           |

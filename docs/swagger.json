@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "CTFLabは、誰もがCTFの問題を作成し、公開できるプラットフォームです。",
-        "title": "CTFLab API",
+        "description": "CTFForgeは、誰もがCTFの問題を作成し、公開できるプラットフォームです。",
+        "title": "CTFForge API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
@@ -402,6 +402,35 @@
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/challenges": {
+            "get": {
+                "description": "公開されているすべての問題のリストを取得します",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public_challenges"
+                ],
+                "summary": "公開されているすべての問題を取得",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dtos.ChallengePublicDTO"
+                            }
                         }
                     },
                     "500": {

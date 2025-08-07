@@ -419,6 +419,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/public/challenges": {
+            "get": {
+                "description": "公開されているすべての問題のリストを取得します",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public_challenges"
+                ],
+                "summary": "公開されているすべての問題を取得",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dtos.ChallengePublicDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/public/challenges/{challengeId}": {
             "get": {
                 "description": "問題IDを指定して、公開用の問題詳細を取得します",
@@ -1164,8 +1193,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "CTFLab API",
-	Description:      "CTFLabは、誰もがCTFの問題を作成し、公開できるプラットフォームです。",
+	Title:            "CTFForge API",
+	Description:      "CTFForgeは、誰もがCTFの問題を作成し、公開できるプラットフォームです。",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

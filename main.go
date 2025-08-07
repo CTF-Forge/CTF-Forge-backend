@@ -1,6 +1,6 @@
-// Package main CTFLab API Server
+// Package main CTFForge API Server
 //
-// CTFLabは、誰もがCTFの問題を作成し、公開できるプラットフォームです。
+// CTFForgeは、誰もがCTFの問題を作成し、公開できるプラットフォームです。
 //
 //	Schemes: http, https
 //	Host: localhost:8080
@@ -31,9 +31,9 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// @title CTFLab API
+// @title CTFForge API
 // @version 1.0
-// @description CTFLabは、誰もがCTFの問題を作成し、公開できるプラットフォームです。
+// @description CTFForgeは、誰もがCTFの問題を作成し、公開できるプラットフォームです。
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support

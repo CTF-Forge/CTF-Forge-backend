@@ -8,7 +8,7 @@
 2. Settings > Developer settings > OAuth Apps
 3. "New OAuth App"をクリック
 4. 以下の情報を入力：
-   - **Application name**: CTFLab
+   - **Application name**: CTFForge
    - **Homepage URL**: `http://localhost:8080`
    - **Authorization callback URL**: `http://localhost:8080/auth/github/callback`
 5. "Register application"をクリック
@@ -34,7 +34,7 @@ GITHUB_CALLBACK=http://localhost:8080/auth/github/callback
 4. "Create Credentials" > "OAuth client ID"
 5. Application type: "Web application"
 6. 以下の情報を入力：
-   - **Name**: CTFLab
+   - **Name**: CTFForge
    - **Authorized JavaScript origins**: `http://localhost:8080`
    - **Authorized redirect URIs**: `http://localhost:8080/auth/google/callback`
 7. "Create"をクリック
@@ -56,17 +56,17 @@ GOOGLE_CALLBACK=http://localhost:8080/auth/google/callback
 
 ```bash
 # .envファイルが存在するか確認
-ls -la ctflab/.env
+ls -la ctfforge/.env
 
 # 環境変数が読み込まれているか確認
-cd ctflab
+cd ctfforge
 go run main.go
 ```
 
 ### 2. サーバー起動
 
 ```bash
-cd ctflab
+cd ctfforge
 go run main.go
 ```
 
@@ -126,7 +126,7 @@ go run main.go
 
 2. **環境変数の確認**
    ```bash
-   cd ctflab
+   cd ctfforge
    go run -c "fmt.Println(os.Getenv(\"GITHUB_KEY\"))" .
    ```
 

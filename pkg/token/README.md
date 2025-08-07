@@ -1,6 +1,6 @@
 # JWT Token Package
 
-CTFLabのJWT認証機能を提供するパッケージです。
+CTFForgeのJWT認証機能を提供するパッケージです。
 
 ## 機能
 
@@ -16,8 +16,8 @@ CTFLabのJWT認証機能を提供するパッケージです。
 ```go
 import (
     "time"
-    "github.com/Saku0512/CTFLab/ctflab/config"
-    "github.com/Saku0512/CTFLab/ctflab/pkg/token"
+    "github.com/Saku0512/CTFForge/ctfforge/config"
+    "github.com/Saku0512/CTFForge/ctfforge/pkg/token"
 )
 
 // 設定からJWTマネージャーを作成
@@ -83,7 +83,7 @@ if err != nil {
 ```go
 import (
     "github.com/gin-gonic/gin"
-    "github.com/Saku0512/CTFLab/ctflab/pkg/token"
+    "github.com/Saku0512/CTFForge/ctfforge/pkg/token"
 )
 
 // 認証必須のミドルウェア
@@ -113,7 +113,7 @@ func ProtectedHandler(c *gin.Context) {
 # JWT設定
 JWT_ACCESS_SECRET=your_access_secret_key
 JWT_REFRESH_SECRET=your_refresh_secret_key
-JWT_ISSUER=ctflab
+JWT_ISSUER=ctfforge
 JWT_ACCESS_EXPIRE_HOURS=1
 JWT_REFRESH_EXPIRE_HOURS=168
 

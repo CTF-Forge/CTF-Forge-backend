@@ -1,4 +1,4 @@
-# CTFLab API ドキュメント
+# CTFForge API ドキュメント
 
 ## 認証API
 
@@ -203,7 +203,7 @@ GET /api/public/challenges
 # JWT設定
 JWT_ACCESS_SECRET=your_access_secret_key
 JWT_REFRESH_SECRET=your_refresh_secret_key
-JWT_ISSUER=ctflab
+JWT_ISSUER=ctfforge
 JWT_ACCESS_EXPIRE_HOURS=1
 JWT_REFRESH_EXPIRE_HOURS=168
 

@@ -105,7 +105,7 @@ func GetJWTRefreshSecret() string {
 func GetJWTIssuer() string {
 	issuer := os.Getenv("JWT_ISSUER")
 	if issuer == "" {
-		issuer = "ctflab"
+		issuer = "ctfforge"
 	}
 	return issuer
 }

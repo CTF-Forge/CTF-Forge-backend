@@ -246,12 +246,12 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: CTFLabは、誰もがCTFの問題を作成し、公開できるプラットフォームです。
+  description: CTFForgeは、誰もがCTFの問題を作成し、公開できるプラットフォームです。
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: CTFLab API
+  title: CTFForge API
   version: "1.0"
 paths:
   /api/challenges:
@@ -506,6 +506,25 @@ paths:
       summary: ユーザーが作成した問題を取得
       tags:
       - challenges
+  /api/public/challenges:
+    get:
+      description: 公開されているすべての問題のリストを取得します
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dtos.ChallengePublicDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: 公開されているすべての問題を取得
+      tags:
+      - public_challenges
   /api/public/challenges/{challengeId}:
     get:
       description: 問題IDを指定して、公開用の問題詳細を取得します
